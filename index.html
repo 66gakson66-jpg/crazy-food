@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crazy Food</title>
+<meta name="theme-color" content="#c8281e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crazy Food">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_balance_wallet,add,arrow_forward,auto_awesome,bakery_dining,call,chat,check_circle,delivery_dining,dinner_dining,download,edit_note,fastfood,forum,info,kebab_dining,location_on,lunch_dining,outdoor_grill,payments,person,receipt_long,remove,restaurant,shopping_bag,smartphone,tapas,takeout_dining,upload_file,water_drop&display=block" rel="stylesheet">
+<style>
+:root{--bg:#f7f4f0;--card:#fff;--tx:#201a17;--mu:#80746d;--line:#ece5de;--ac:#c8281e;--ac2:#9f1d15;--soft:#fbebe9;--sh:0 6px 22px rgba(60,30,20,.08);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141011;--card:#1f1819;--tx:#f4ede8;--mu:#a99d96;--line:#2f2627;--ac:#e0473b;--ac2:#b8322a;--soft:#2e1916;--sh:0 6px 22px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#141011;--card:#1f1819;--tx:#f4ede8;--mu:#a99d96;--line:#2f2627;--ac:#e0473b;--ac2:#b8322a;--soft:#2e1916;--sh:0 6px 22px rgba(0,0,0,.35)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Cairo",Tahoma,sans-serif;max-width:560px;margin-inline:auto;min-height:100vh;padding-bottom:110px}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 10% 8%,var(--soft),transparent 40%),radial-gradient(circle at 92% 70%,var(--soft),transparent 45%);animation:drift 16s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(-3%,3%) scale(1.12)}}
+@keyframes inF{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+@keyframes inB{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes up{from{opacity:0;transform:translateY(30px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes grow{from{width:0}}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(200,40,30,.35)}100%{box-shadow:0 0 0 16px rgba(200,40,30,0)}}
+.ms{font-family:"Material Symbols Rounded";font-weight:400;font-style:normal;font-size:24px;line-height:1;display:inline-block;width:1em;overflow:hidden;white-space:nowrap;direction:ltr;letter-spacing:normal;text-transform:none;font-feature-settings:"liga";-webkit-font-feature-settings:"liga";vertical-align:middle}
+.in-f>*:not(.bar){animation:inF .45s cubic-bezier(.2,.8,.2,1) both}
+.in-b>*:not(.bar){animation:inB .45s cubic-bezier(.2,.8,.2,1) both}
+.in-f>.grid,.in-b>.grid,.in-f>.list,.in-b>.list{animation:none}
+.in-f .sec,.in-f .item{animation:inF .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*45ms)}
+.in-b .sec,.in-b .item{animation:inB .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*45ms)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:12px;padding:12px 16px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+body::after{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:21}
+.brand{display:flex;align-items:center;gap:10px;flex:1}
+.logo{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--line);flex:none;background:var(--soft)}
+.brand b{display:block;font-size:19px;font-weight:800;line-height:1.1}
+.brand small{color:var(--mu);font-size:12px}
+.top h2{margin:0;font-size:20px;font-weight:800;flex:1}
+.ib{position:relative;width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--tx);display:grid;place-items:center;cursor:pointer;box-shadow:var(--sh);transition:transform .15s}
+.ib:active{transform:scale(.9)}
+.ib i{position:absolute;top:-6px;inset-inline-start:-6px;min-width:20px;height:20px;border-radius:10px;background:var(--ac);color:#fff;font:800 11px/20px "Cairo";text-align:center;font-style:normal;padding:0 5px;animation:pop .35s both}
+.hero{margin:6px 16px 14px;padding:20px;border-radius:22px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;display:flex;align-items:center;gap:12px;box-shadow:0 12px 30px rgba(160,30,20,.3);overflow:hidden;position:relative}
+.hero h1{margin:0 0 4px;font-size:22px;font-weight:800}
+.hero p{margin:0;font-size:13.5px;opacity:.9;line-height:1.6}
+.hero .ms{font-size:64px;opacity:.9;animation:float 4s ease-in-out infinite;flex:none}
+@keyframes float{50%{transform:translateX(-8px) translateY(-4px)}}
+.chipsrow{display:flex;gap:8px;padding:0 16px 6px;overflow-x:auto;scrollbar-width:none}
+.pill{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:13px;color:var(--mu);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.pill .ms{font-size:18px;color:var(--ac)}
+.sh{margin:14px 16px 4px;font-size:17px;font-weight:800}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 16px}
+.sec{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:start;padding:16px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:inherit;cursor:pointer;box-shadow:var(--sh);transition:transform .2s,border-color .2s}
+.sec:active{transform:scale(.96)}
+.sec:hover{border-color:var(--ac)}
+.sec .ico{width:46px;height:46px;border-radius:14px;background:var(--soft);color:var(--ac);display:grid;place-items:center;margin-bottom:6px;transition:transform .3s}
+.sec:hover .ico{transform:rotate(-8deg) scale(1.08)}
+.sec b{font-size:16px;font-weight:800}
+.sec small{color:var(--mu);font-size:12.5px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 16px 12px;scrollbar-width:none}
+.chip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s}
+.chip .ms{font-size:19px}
+.chip.on{background:var(--ac);border-color:var(--ac);color:#fff;transform:scale(1.04)}
+.note{display:flex;gap:10px;align-items:flex-start;margin:0 16px 12px;padding:12px 14px;border-radius:14px;background:var(--soft);border:1px solid color-mix(in srgb,var(--ac) 25%,transparent);font-size:13.5px;line-height:1.7}
+.note .ms{color:var(--ac);font-size:22px;flex:none}
+.list{padding:0 16px}
+.item{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;margin-bottom:10px;box-shadow:var(--sh)}
+.pic{width:88px;height:88px;border-radius:14px;overflow:hidden;background:var(--soft);flex:none;display:grid;place-items:center;color:var(--ac)}
+.pic img{width:100%;height:100%;object-fit:cover}
+.pic .ms{font-size:36px}
+.inf{flex:1;min-width:0}
+.inf b{display:block;font-size:15.5px;font-weight:700;line-height:1.4}
+.price{color:var(--ac);font-weight:800;margin-top:2px}
+.sz{display:inline-flex;gap:4px;margin-top:6px;padding:3px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+.sz button{border:0;background:none;color:var(--mu);font:inherit;font-weight:800;font-size:13px;padding:2px 14px;border-radius:8px;cursor:pointer;transition:all .2s}
+.sz button.on{background:var(--ac);color:#fff}
+.qty{display:flex;align-items:center;gap:6px;margin-top:8px}
+.qty button{width:34px;height:34px;border-radius:11px;border:0;background:var(--ac);color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .15s}
+.qty button.m{background:var(--bg);color:var(--tx);border:1px solid var(--line)}
+.qty button:active{transform:scale(.82)}
+.qty span{min-width:26px;text-align:center;font-weight:800;font-size:17px}
+.bar{position:fixed;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));max-width:532px;margin:auto;z-index:30;display:flex;gap:10px;align-items:stretch}
+.bar .cta{flex:1;width:auto}
+.bb{flex:none;width:56px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--tx);display:grid;place-items:center;cursor:pointer;box-shadow:var(--sh);transition:transform .15s}
+.bb:active{transform:scale(.9)}
+.bar.pop{animation:up .5s cubic-bezier(.2,1.2,.3,1)}
+.cta{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;border-radius:18px;padding:14px 18px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font:inherit;font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 12px 28px rgba(160,30,20,.4);transition:transform .15s}
+.cta:active{transform:scale(.97)}
+.cta .n{background:rgba(255,255,255,.22);border-radius:10px;padding:1px 10px}
+.cta.wa{background:linear-gradient(135deg,#25b861,#14803f);box-shadow:0 10px 24px rgba(20,128,63,.35)}
+.cta.ms2{background:linear-gradient(135deg,#2f86f0,#4b46d6);box-shadow:0 10px 24px rgba(60,80,210,.35)}
+.cta.plain{justify-content:center}
+.steps{display:flex;align-items:center;gap:0;padding:4px 20px 14px}
+.stp{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--mu);width:60px}
+.stp i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--line);background:var(--card);font:800 13px "Cairo";font-style:normal}
+.stp.on{color:var(--tx);font-weight:700}
+.stp.on i{background:var(--ac);border-color:var(--ac);color:#fff}
+.ln{flex:1;height:3px;background:var(--line);border-radius:3px;margin-bottom:18px;overflow:hidden}
+.ln s{display:block;height:100%;width:100%;background:var(--ac);animation:grow .6s both}
+.box{background:var(--card);border:1px solid var(--line);border-radius:20px;margin:0 16px 14px;padding:16px;box-shadow:var(--sh)}
+.box h3{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:16.5px;font-weight:800}
+.box h3 .ms{color:var(--ac)}
+label{display:flex;align-items:center;gap:6px;font-weight:700;margin:12px 0 6px;font-size:14px}
+label .ms{font-size:19px;color:var(--mu)}
+input[type=text],input[type=tel],textarea{width:100%;font:inherit;font-size:16px;color:var(--tx);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:12px;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,textarea:focus{border-color:var(--ac);box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 16%,transparent)}
+input[type=file]{width:100%;font:inherit;color:var(--mu)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:15px}
+.tot{font-weight:800;font-size:18px;border-top:1px dashed var(--line);margin-top:6px;padding-top:10px;color:var(--ac)}
+.pay{display:flex;gap:10px}
+.pay label{flex:1;margin:0;flex-direction:column;gap:4px;text-align:center;border:2px solid var(--line);border-radius:16px;padding:14px 6px;cursor:pointer;transition:all .2s;font-size:13.5px}
+.pay label .ms{font-size:28px;color:var(--mu);transition:color .2s}
+.pay input{display:none}
+.pay label:has(input:checked){border-color:var(--ac);background:var(--soft);animation:ring .6s}
+.pay label:has(input:checked) .ms{color:var(--ac)}
+.err{color:var(--ac);font-size:13px;font-weight:700;margin-top:6px;display:none}
+.hide{display:none}
+.ok{text-align:center;padding:24px 16px 8px}
+.ok .ms{font-size:84px;color:#1f9d55;animation:pop .6s both .2s}
+.ok h2{margin:6px 0;font-size:24px;font-weight:800}
+.ok p{color:var(--mu);margin:0}
+.empty{text-align:center;padding:50px 20px;color:var(--mu)}
+.empty .ms{font-size:64px;color:var(--ac);opacity:.6}
+@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CFG={wa:"201061524083",ms:"61590604576689",vf:"01061524083",name:"Crazy Food"};
+const PHOTOS={};
+const LOGO="data:image/jpeg;base64,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";
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+const I=n=>`<span class="ms" aria-hidden="true">${n}</span>`;
+const M=[
+["الجديد","auto_awesome",[["كريب كريزي بوم",100]]],
+["الكريب","bakery_dining",[["كريب بطاطس",35],["كريب بانيه بطاطس",50],["كريب بانيه",60],["كريب كرانشي",70],["كريب هوت دوج",70],["كريب استربس",75],["كريب زنجر",75],["كريب سوبر كرانشي",75],["كريب شاورما",80],["كريب كفتة",80],["كريب مشكل فراخ",85],["كريب مشكل لحوم",90],["كريب CRAZY FOOD",100]]],
+["السندوتشات","lunch_dining",[["سندوتش كبدة جريل",25,30],["سندوتش سجق جريل",25,30],["سندوتش بطاطس",30,null],["سندوتش بطاطس موتزريلا",40,50],["سندوتش بانيه",40,60],["سندوتش هوت دوج",40,70],["سندوتش زنجر",50,70],["سندوتش استربس",50,70],["سندوتش شاورما جريل",50,70],["سندوتش شيش طاووق",50,70],["سندوتش كفتة",50,70]]],
+["ساندوتشات سوري","kebab_dining",[["سوري سجق",60],["سوري كبدة",60]]],
+["الحواوشي","takeout_dining",[["حواوشي سادة",20,25],["حواوشي جبنة",25,30]]],
+["البرجر","fastfood",[["بيف كلاسيك",100],["بيف رانش / بيف تشيز",120],["تشيكن كلاسيك",115],["تشيكن ميجا فاير",120],["تشيكن رانش",125],["بيكاسو",130]]],
+["الرول","dinner_dining",[["رول راب",80],["رول كوردن بلو",90],["رول بيف",100]]],
+["التسويات والمشويات","outdoor_grill",[["فرخة مشوية كاملة",280],["نص فرخة مشوية",150],["كيلو كفتة مشوية",420],["نص كيلو كفتة مشوية",210],["ربع كيلو كفتة مشوية",110]],"التسويات والمشويات لازم تتطلب قبل الموعد بـ 12 ساعة"],
+["البطاطس","tapas",[["باكت بطاطس سادة",20],["باكت بطاطس صوصات",30]]],
+["الصوصات","water_drop",[["صوص كاتشب",20],["صوص رانش",25],["صوص باربكيو",25],["طحينة",20],["صوص تكساس",25],["صوص بيج تيست",25],["صوص مايونيز",25]]]
+].map(([n,ic,its,note])=>({n,ic,note,items:its.map(([nm,a,b])=>({n:nm,sizes:b===undefined?{"":a}:b===null?{M:a}:{M:a,L:b}}))}));
+const cart={},sel={};
+const hist=[];let deferred=null;
+let view="home",sec=0,pay="cash",shot=null,form={name:"",addr:"",phone:"",notes:""},dir="f",anim=true,prevCnt=0;
+const RK={home:0,sec:1,cart:2,checkout:3,done:4};
+const k3=(s,i,z)=>s+"-"+i+"-"+z;
+const cur=(s,i)=>sel[s+"-"+i]??Object.keys(M[s].items[i].sizes)[0];
+const lines=()=>{const r=[];M.forEach((m,s)=>m.items.forEach((it,i)=>Object.keys(it.sizes).forEach(z=>{const k=k3(s,i,z),q=cart[k]||0;if(q)r.push({k,ic:m.ic,n:it.n+(z?" ("+z+")":""),p:it.sizes[z],q})})));return r};
+const sub=()=>lines().reduce((a,l)=>a+l.p*l.q,0);
+const cnt=()=>lines().reduce((a,l)=>a+l.q,0);
+const $=h=>{const a=document.getElementById("app");a.innerHTML='<div class="view'+(anim?' in-'+dir:'')+'">'+h+'</div>';anim=false};
+function chgK(k,d){cart[k]=Math.max(0,(cart[k]||0)+d);render()}
+function setSz(s,i,z){sel[s+"-"+i]=z;render()}
+function go(v,s){const ns=s===undefined?sec:s;dir=(RK[v]>RK[view]||(v==="sec"&&view==="sec"&&ns>sec))?"f":"b";if(!(v==="sec"&&view==="sec"))hist.push([view,sec]);view=v;sec=ns;anim=true;window.scrollTo(0,0);render()}
+function back(){if(!hist.length)return;if(view==="checkout")saveForm();const p=hist.pop();dir="b";view=p[0];sec=p[1];anim=true;window.scrollTo(0,0);render()}
+function doInstall(){if(!deferred)return;deferred.prompt();deferred=null;render()}
+const BB=`<button class="bb" aria-label="رجوع" onclick="back()">${I("arrow_forward")}</button>`;
+function saveForm(){["name","addr","phone","notes"].forEach(f=>{const e=document.getElementById("f_"+f);if(e)form[f]=e.value})}
+const cartBtn=()=>`<button class="ib" aria-label="السلة" onclick="go('cart')">${I("shopping_bag")}${cnt()?`<i>${cnt()}</i>`:""}</button>`;
+function bar(){const c=cnt(),pop=c&&!prevCnt;prevCnt=c;const b=view==="sec"?BB:"";if(!c&&!b)return "";return `<div class="bar${pop?" pop":""}">${b}${c?`<button class="cta" onclick="go('cart')"><span>${I("shopping_bag")} عرض السلة <span class="n">${c}</span></span><span>${sub()} ج</span></button>`:""}</div>`}
+const steps=n=>`<div class="steps">${["السلة","البيانات","الفاتورة"].map((t,i)=>`${i?`<div class="ln">${i<=n?"<s></s>":""}</div>`:""}<div class="stp${i<=n?" on":""}"><i>${i+1}</i>${t}</div>`).join("")}</div>`;
+const photo=(it,ic)=>PHOTOS[it.n]?`<img src="${PHOTOS[it.n]}" alt="${it.n}">`:I(ic);
+function render(){
+if(view==="home"){
+$(`<header class="top"><div class="brand"><img class="logo" src="${LOGO}" alt=""><div><b>${CFG.name}</b><small>منية النصر، الجنينة</small></div></div>${deferred?`<button class="ib" aria-label="تثبيت التطبيق" onclick="doInstall()">${I("download")}</button>`:""}${cartBtn()}</header>
+<section class="hero"><div><h1>جعان؟ اطلب دلوقتي</h1><p>اختار من الأقسام وابعت طلبك على واتساب أو ماسنجر</p></div>${I("delivery_dining")}</section>
+<div class="chipsrow"><span class="pill">${I("delivery_dining")}توصيل لحد باب البيت</span><span class="pill">${I("payments")}كاش أو فودافون كاش</span></div>
+<h2 class="sh">الأقسام</h2>
+<div class="grid">${M.map((m,s)=>`<button class="sec" style="--i:${s}" onclick="go('sec',${s})"><span class="ico">${I(m.ic)}</span><b>${m.n}</b><small>${m.items.length} صنف</small></button>`).join("")}</div>${bar()}`);
+}else if(view==="sec"){
+const m=M[sec];
+$(`<header class="top"><h2>${m.n}</h2>${cartBtn()}</header>
+<nav class="chips">${M.map((x,s)=>`<button class="chip${s===sec?" on":""}" onclick="go('sec',${s})">${I(x.ic)}${x.n}</button>`).join("")}</nav>
+${m.note?`<div class="note">${I("info")}<span>${m.note}</span></div>`:""}
+<div class="list">${m.items.map((it,i)=>{const z=cur(sec,i),ks=Object.keys(it.sizes);return `<article class="item" style="--i:${i}"><div class="pic">${photo(it,m.ic)}</div><div class="inf"><b>${it.n}${ks.length===1&&z?" ("+z+")":""}</b><div class="price">${it.sizes[z]} ج</div>${ks.length>1?`<div class="sz">${ks.map(k=>`<button class="${k===z?"on":""}" onclick="setSz(${sec},${i},'${k}')">${k}</button>`).join("")}</div>`:""}<div class="qty"><button aria-label="زيادة" onclick="chgK('${k3(sec,i,z)}',1)">${I("add")}</button><span>${cart[k3(sec,i,z)]||0}</span><button class="m" aria-label="نقصان" onclick="chgK('${k3(sec,i,z)}',-1)">${I("remove")}</button></div></div></article>`}).join("")}</div>${bar()}`);
+requestAnimationFrame(()=>{const c=document.querySelector(".chip.on");if(c)c.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"})});
+}else if(view==="cart"){
+const L=lines();
+$(`<header class="top"><h2>سلة الطلب</h2></header>${steps(0)}
+${L.length?`<div class="list">${L.map((l,i)=>`<article class="item" style="--i:${i}"><div class="pic" style="width:60px;height:60px">${I(l.ic)}</div><div class="inf"><b>${l.n}</b><div class="price">${l.p*l.q} ج</div><div class="qty" style="margin-top:4px"><button onclick="chgK('${l.k}',1)">${I("add")}</button><span>${l.q}</span><button class="m" onclick="chgK('${l.k}',-1)">${I("remove")}</button></div></div></article>`).join("")}</div>
+<div class="box"><div class="row tot" style="border:0;margin:0;padding:0"><span>إجمالي الأصناف</span><span>${sub()} ج</span></div></div>
+<div class="bar">${BB}<button class="cta plain" onclick="go('checkout')">متابعة الطلب</button></div>`:`<div class="empty">${I("shopping_bag")}<p>السلة فاضية، ابدأ اختار من المنيو</p></div><div class="bar">${BB}</div>`}`);
+}else if(view==="checkout"){
+$(`<header class="top"><h2>بيانات الطلب</h2></header>${steps(1)}
+<div class="box"><h3>${I("person")}بيانات التوصيل</h3>
+<label>${I("person")}الاسم</label><input type="text" id="f_name" placeholder="اكتب اسمك" value="${esc(form.name)}">
+<label>${I("location_on")}العنوان</label><input type="text" id="f_addr" placeholder="المنطقة، الشارع، رقم العمارة، الدور" value="${esc(form.addr)}">
+<label>${I("call")}رقم الموبايل</label><input type="tel" id="f_phone" placeholder="01xxxxxxxxx" value="${esc(form.phone)}">
+<label>${I("edit_note")}ملاحظات على الأوردر</label><textarea id="f_notes" rows="3" placeholder="مثال: من غير بصل">${esc(form.notes)}</textarea></div>
+<div class="box"><h3>${I("payments")}طريقة الدفع</h3><div class="pay">
+<label><input type="radio" name="p" ${pay==="cash"?"checked":""} onchange="setPay('cash')">${I("payments")}الدفع عند الاستلام</label>
+<label><input type="radio" name="p" ${pay==="vf"?"checked":""} onchange="setPay('vf')">${I("smartphone")}فودافون كاش</label></div>
+<div id="vf" class="${pay==="vf"?"":"hide"}"><div class="note" style="margin:12px 0 0">${I("account_balance_wallet")}<span>حوّل المبلغ على فودافون كاش: <b>${CFG.vf}</b> وارفع سكرين التحويل (إجباري).</span></div>
+<label>${I("upload_file")}سكرين التحويل</label><input type="file" accept="image/*" onchange="saveForm();shot=this.files[0]||null;render()">${shot?`<div class="note" style="margin:8px 0 0">${I("check_circle")}<span>تم اختيار: ${esc(shot.name)}</span></div>`:""}<div class="err" id="e_shot">لازم ترفع سكرين التحويل</div></div>
+<div class="note" style="margin:12px 0 0">${I("delivery_dining")}<span>مصاريف التوصيل بتتحدد حسب منطقتك وبتتدفع للمندوب عند الاستلام.</span></div></div>
+<div class="box"><h3>${I("receipt_long")}ملخص الحساب</h3><div class="row"><span>الأصناف</span><span>${sub()} ج</span></div><div class="row"><span>التوصيل</span><span>بيتحدد عند الاستلام</span></div>
+<div class="row tot"><span>${pay==="cash"?"المطلوب عند الاستلام":"عند الاستلام"}</span><span>${pay==="cash"?sub()+" ج + التوصيل":"مصاريف التوصيل فقط"}</span></div></div>
+<div class="err" id="e_f" style="margin:0 16px 8px">من فضلك اكتب الاسم والعنوان ورقم الموبايل</div>
+<div class="bar">${BB}<button class="cta plain" onclick="confirmOrder()">تأكيد الطلب</button></div>`);
+}else{
+$(`<header class="top"><div class="brand"><img class="logo" src="${LOGO}" alt=""><div><b>${CFG.name}</b></div></div></header>${steps(2)}
+<div class="ok">${I("check_circle")}<h2>تم تجهيز الفاتورة</h2><p>ابعتها للمطعم عشان نبدأ نجهز طلبك</p></div>
+<div class="box"><button class="cta wa" onclick="sendWA()"><span>${I("chat")} إرسال الفاتورة عبر واتساب</span></button><div style="height:10px"></div><button class="cta ms2" onclick="sendMS()"><span>${I("forum")} إرسال الفاتورة عبر ماسنجر</span></button>${pay==="vf"?`<div class="note" style="margin:12px 0 0">${I("info")}<span>بعد الإرسال، ابعت صورة سكرين فودافون كاش في نفس الشات.</span></div>`:""}</div>
+<div class="bar">${BB}<button class="cta plain" onclick="back()">تعديل بيانات الطلب</button></div>`);
+}}
+function setPay(p){saveForm();if(p!==pay)shot=null;pay=p;render()}
+function confirmOrder(){saveForm();let bad=false;
+if(!form.name.trim()||!form.addr.trim()||!form.phone.trim()){document.getElementById("e_f").style.display="block";bad=true}
+if(pay==="vf"&&!shot){document.getElementById("e_shot").style.display="block";bad=true}
+if(!bad)go("done")}
+function invoice(){
+const L=lines().map(l=>`• ${l.q} × ${l.n} = ${l.p*l.q} ج`).join("\n");
+const due=pay==="cash"?sub()+" ج + مصاريف التوصيل":"مصاريف التوصيل فقط";
+return `🧾 فاتورة طلب جديد\n${L}\n\nالأصناف: ${sub()} ج\nالتوصيل: بيتدفع للمندوب عند الاستلام\nالدفع: ${pay==="cash"?"عند الاستلام":"فودافون كاش (تم رفع السكرين)"}\nالمطلوب عند الاستلام: ${due}\n\nالاسم: ${form.name}\nالعنوان: ${form.addr}\nالموبايل: ${form.phone}\nملاحظات: ${form.notes||"—"}`}
+function sendWA(){window.open("https://wa.me/"+CFG.wa+"?text="+encodeURIComponent(invoice()),"_blank")}
+function fbCopy(t){try{const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();document.execCommand("copy");a.remove()}catch(e){}}
+function copyTxt(t){try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).catch(()=>fbCopy(t));return}}catch(e){}fbCopy(t)}
+function sendMS(){const t=invoice();copyTxt(t);window.open("https://m.me/"+CFG.ms,"_blank");alert("تم نسخ الفاتورة، الصقها في شات ماسنجر وابعتها.")}
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;if(view==="home")render()});
+try{history.pushState({g:1},"");window.addEventListener("popstate",()=>{if(hist.length){back();try{history.pushState({g:1},"")}catch(e){}}})}catch(e){}
+if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+render();
+</script>
+</body>
+</html>
