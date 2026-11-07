@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Crazy Food</title>
 <meta name="theme-color" content="#c8281e">
 <meta name="mobile-web-app-capable" content="yes">
@@ -19,7 +19,8 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141011;--card:#1f1819;--tx:#f4ede8;--mu:#a99d96;--line:#2f2627;--ac:#e0473b;--ac2:#b8322a;--soft:#2e1916;--sh:0 6px 22px rgba(0,0,0,.35)}}
 :root[data-theme="dark"]{--bg:#141011;--card:#1f1819;--tx:#f4ede8;--mu:#a99d96;--line:#2f2627;--ac:#e0473b;--ac2:#b8322a;--soft:#2e1916;--sh:0 6px 22px rgba(0,0,0,.35)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#invimg{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);background:#fff;touch-action:pan-x pan-y;-webkit-touch-callout:default}
 body{margin:0;background:var(--bg);color:var(--tx);font-family:"Cairo",Tahoma,sans-serif;max-width:560px;margin-inline:auto;min-height:100vh;padding-bottom:110px}
 body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 10% 8%,var(--soft),transparent 40%),radial-gradient(circle at 92% 70%,var(--soft),transparent 45%);animation:drift 16s ease-in-out infinite alternate}
 @keyframes drift{to{transform:translate(-3%,3%) scale(1.12)}}
@@ -209,23 +210,70 @@ $(`<header class="top"><h2>بيانات الطلب</h2></header>${steps(1)}
 <div class="bar">${BB}<button class="cta plain" onclick="confirmOrder()">تأكيد الطلب</button></div>`);
 }else{
 $(`<header class="top"><div class="brand"><img class="logo" src="${LOGO}" alt=""><div><b>${CFG.name}</b></div></div></header>${steps(2)}
-<div class="ok">${I("check_circle")}<h2>تم تجهيز الفاتورة</h2><p>ابعتها للمطعم عشان نبدأ نجهز طلبك</p></div>
-<div class="box"><button class="cta wa" onclick="sendWA()"><span>${I("chat")} إرسال الفاتورة عبر واتساب</span></button><div style="height:10px"></div><button class="cta ms2" onclick="sendMS()"><span>${I("forum")} إرسال الفاتورة عبر ماسنجر</span></button>${pay==="vf"?`<div class="note" style="margin:12px 0 0">${I("info")}<span>بعد الإرسال، ابعت صورة سكرين فودافون كاش في نفس الشات.</span></div>`:""}</div>
+<div class="ok">${I("check_circle")}<h2>تم تجهيز الفاتورة</h2><p>الفاتورة صورة جاهزة، اضغط إرسال وهتلاقيها مرفقة</p></div>
+<div class="box"><img id="invimg" alt="الفاتورة"></div>
+<div class="box"><button class="cta wa" onclick="sendImg('wa')"><span>${I("chat")} إرسال الفاتورة عبر واتساب</span></button><div style="height:10px"></div><button class="cta ms2" onclick="sendImg('ms')"><span>${I("forum")} إرسال الفاتورة عبر ماسنجر</span></button><div style="height:10px"></div><button class="cta plain" onclick="saveImg()"><span>${I("download")} حفظ الصورة</span></button>${pay==="vf"?`<div class="note" style="margin:12px 0 0">${I("info")}<span>بعد الإرسال، ابعت صورة سكرين فودافون كاش في نفس الشات.</span></div>`:""}</div>
 <div class="bar">${BB}<button class="cta plain" onclick="back()">تعديل بيانات الطلب</button></div>`);
+showInv();
 }}
 function setPay(p){saveForm();if(p!==pay)shot=null;pay=p;render()}
 function confirmOrder(){saveForm();let bad=false;
 if(!form.name.trim()||!form.addr.trim()||!form.phone.trim()){document.getElementById("e_f").style.display="block";bad=true}
 if(pay==="vf"&&!shot){document.getElementById("e_shot").style.display="block";bad=true}
 if(!bad)go("done")}
-function invoice(){
-const L=lines().map(l=>`• ${l.q} × ${l.n} = ${l.p*l.q} ج`).join("\n");
+let invBlob=null,invFile=null;
+function wrapT(c,t,w){const out=[];String(t).split("\n").forEach(p=>{let cur="";p.split(/\s+/).forEach(wd=>{const x=cur?cur+" "+wd:wd;if(c.measureText(x).width>w&&cur){out.push(cur);cur=wd}else cur=x});out.push(cur)});return out}
+async function buildInv(){
+try{await document.fonts.load('800 24px Cairo');await document.fonts.load('400 24px Cairo');await document.fonts.load('600 24px Cairo')}catch(e){}
+const W=720,P=36,IW=W-P*2,F='Cairo,Tahoma,sans-serif';
+const cv=document.createElement("canvas"),c=cv.getContext("2d");
 const due=pay==="cash"?sub()+" ج + مصاريف التوصيل":"مصاريف التوصيل فقط";
-return `🧾 فاتورة طلب جديد\n${L}\n\nالأصناف: ${sub()} ج\nالتوصيل: بيتدفع للمندوب عند الاستلام\nالدفع: ${pay==="cash"?"عند الاستلام":"فودافون كاش (تم رفع السكرين)"}\nالمطلوب عند الاستلام: ${due}\n\nالاسم: ${form.name}\nالعنوان: ${form.addr}\nالموبايل: ${form.phone}\nملاحظات: ${form.notes||"—"}`}
-function sendWA(){window.open("https://wa.me/"+CFG.wa+"?text="+encodeURIComponent(invoice()),"_blank")}
-function fbCopy(t){try{const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();document.execCommand("copy");a.remove()}catch(e){}}
-function copyTxt(t){try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).catch(()=>fbCopy(t));return}}catch(e){}fbCopy(t)}
-function sendMS(){const t=invoice();copyTxt(t);window.open("https://m.me/"+CFG.ms,"_blank");alert("تم نسخ الفاتورة، الصقها في شات ماسنجر وابعتها.")}
+const info=[["الاسم",form.name],["العنوان",form.addr],["رقم الموبايل",form.phone],["ملاحظات",form.notes||"—"],["طريقة الدفع",pay==="cash"?"الدفع عند الاستلام":"فودافون كاش (تم رفع السكرين)"]];
+const L=lines();
+let shotImg=null,iw=0,ih=0;
+if(pay==="vf"&&shot){try{shotImg=await new Promise((r,j)=>{const im=new Image();im.onload=()=>r(im);im.onerror=j;im.src=URL.createObjectURL(shot)});iw=IW;ih=Math.round(shotImg.naturalHeight*IW/shotImg.naturalWidth);if(ih>1000){iw=Math.round(iw*1000/ih);ih=1000}}catch(e){shotImg=null}}
+// measure
+c.direction="rtl";c.font='600 26px '+F;
+const infoL=info.map(([k,v])=>wrapT(c,v,IW-250));
+let H=130;
+infoL.forEach(ls=>{H+=Math.max(1,ls.length)*38+22});
+H+=70+L.length*56+20+190+(shotImg?ih+110:0);
+cv.width=W;cv.height=H;
+c.direction="rtl";c.textBaseline="middle";
+c.fillStyle="#fff";c.fillRect(0,0,W,H);
+c.fillStyle="#c8281e";c.fillRect(0,0,W,100);
+c.fillStyle="#fff";c.textAlign="center";c.font='800 38px '+F;c.fillText("🧾 فاتورة طلب - "+CFG.name,W/2,50);
+let y=130;
+info.forEach(([k,v],i)=>{const ls=infoL[i],h=Math.max(1,ls.length)*38+22;
+c.fillStyle=i%2?"#fff":"#faf6f2";c.fillRect(P-10,y-6,IW+20,h);
+c.textAlign="right";c.fillStyle="#80746d";c.font='600 24px '+F;c.fillText(k,W-P,y+19);
+c.fillStyle="#201a17";c.font='600 26px '+F;ls.forEach((t,j)=>c.fillText(t,W-P-230,y+19+j*38));
+y+=h});
+y+=14;c.fillStyle="#c8281e";c.fillRect(P,y,IW,3);y+=28;
+c.textAlign="right";c.fillStyle="#c8281e";c.font='800 30px '+F;c.fillText("الأوردر",W-P,y+10);y+=50;
+L.forEach(l=>{c.fillStyle="#201a17";c.font='600 26px '+F;c.textAlign="right";c.fillText(l.q+" × "+l.n,W-P,y+18);
+c.textAlign="left";c.font='800 26px '+F;c.fillText(l.p*l.q+" ج",P,y+18);
+c.fillStyle="#ece5de";c.fillRect(P,y+46,IW,1.5);y+=56});
+y+=20;
+c.fillStyle="#fbebe9";c.fillRect(P-10,y,IW+20,150);
+const rows=[["إجمالي الأصناف",sub()+" ج"],["التوصيل","بيتدفع للمندوب عند الاستلام"],["المطلوب عند الاستلام",due]];
+rows.forEach(([k,v],i)=>{const yy=y+30+i*44,b=i===2;c.fillStyle=b?"#c8281e":"#201a17";c.font=(b?'800 27px ':'600 24px ')+F;c.textAlign="right";c.fillText(k,W-P,yy);c.textAlign="left";c.fillText(v,P,yy)});
+if(shotImg){y+=150+34;c.fillStyle="#c8281e";c.fillRect(P,y,IW,3);y+=28;c.textAlign="right";c.font='800 30px '+F;c.fillText("سكرين التحويل",W-P,y+10);y+=50;const x0=Math.round((W-iw)/2);c.drawImage(shotImg,x0,y,iw,ih);c.strokeStyle="#ece5de";c.lineWidth=2;c.strokeRect(x0,y,iw,ih)}
+invBlob=await new Promise(r=>cv.toBlob(r,"image/png"));
+try{invFile=new File([invBlob],"invoice.png",{type:"image/png"})}catch(e){invFile=null}
+return URL.createObjectURL(invBlob)}
+async function showInv(){const u=await buildInv();const im=document.getElementById("invimg");if(im)im.src=u}
+function saveImg(){if(!invBlob)return;const a=document.createElement("a");a.href=URL.createObjectURL(invBlob);a.download="invoice-crazy-food.png";document.body.appendChild(a);a.click();a.remove()}
+async function sendImg(app){
+if(!invBlob)await buildInv();
+try{if(invFile&&navigator.canShare&&navigator.canShare({files:[invFile]})){await navigator.share({files:[invFile],title:"فاتورة "+CFG.name});return}}catch(e){if(e&&e.name==="AbortError")return}
+saveImg();
+alert("تم حفظ صورة الفاتورة. هنفتح "+(app==="wa"?"واتساب":"ماسنجر")+"، اضغط على علامة المرفقات وأرفق الصورة.");
+window.open(app==="wa"?"https://wa.me/"+CFG.wa:"https://m.me/"+CFG.ms,"_blank")}
+["gesturestart","gesturechange","gestureend"].forEach(e=>document.addEventListener(e,x=>x.preventDefault()));
+document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+document.addEventListener("wheel",e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&["+","-","=","0"].includes(e.key))e.preventDefault()});
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;if(view==="home")render()});
 try{history.pushState({g:1},"");window.addEventListener("popstate",()=>{if(hist.length){back();try{history.pushState({g:1},"")}catch(e){}}})}catch(e){}
 if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
