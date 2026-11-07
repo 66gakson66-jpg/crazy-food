@@ -201,8 +201,7 @@ $(`<header class="top"><h2>بيانات الطلب</h2></header>${steps(1)}
 <div class="box"><h3>${I("payments")}طريقة الدفع</h3><div class="pay">
 <label><input type="radio" name="p" ${pay==="cash"?"checked":""} onchange="setPay('cash')">${I("payments")}الدفع عند الاستلام</label>
 <label><input type="radio" name="p" ${pay==="vf"?"checked":""} onchange="setPay('vf')">${I("smartphone")}فودافون كاش</label></div>
-<div id="vf" class="${pay==="vf"?"":"hide"}"><div class="note" style="margin:12px 0 0">${I("account_balance_wallet")}<span>حوّل المبلغ على فودافون كاش: <b>${CFG.vf}</b> وارفع سكرين التحويل (إجباري).</span></div>
-<label>${I("upload_file")}سكرين التحويل</label><input type="file" accept="image/*" onchange="saveForm();shot=this.files[0]||null;render()">${shot?`<div class="note" style="margin:8px 0 0">${I("check_circle")}<span>تم اختيار: ${esc(shot.name)}</span></div>`:""}<div class="err" id="e_shot">لازم ترفع سكرين التحويل</div></div>
+<div id="vf" class="${pay==="vf"?"":"hide"}"><div style="text-align:center;margin:16px 0 4px"><div style="font-size:15px;color:var(--mu)">حوّل المبلغ على فودافون كاش</div><div style="font-size:36px;font-weight:800;letter-spacing:1px;color:var(--ac);direction:ltr;margin:6px 0">${CFG.vf}</div><div style="font-size:16px;font-weight:600">ابعت سكرين التحويل على نفس الرقم</div></div></div>
 <div class="note" style="margin:12px 0 0">${I("delivery_dining")}<span>مصاريف التوصيل بتتحدد حسب منطقتك وبتتدفع للمندوب عند الاستلام.</span></div></div>
 <div class="box"><h3>${I("receipt_long")}ملخص الحساب</h3><div class="row"><span>الأصناف</span><span>${sub()} ج</span></div><div class="row"><span>التوصيل</span><span>بيتحدد عند الاستلام</span></div>
 <div class="row tot"><span>${pay==="cash"?"المطلوب عند الاستلام":"عند الاستلام"}</span><span>${pay==="cash"?sub()+" ج + التوصيل":"مصاريف التوصيل فقط"}</span></div></div>
@@ -210,66 +209,28 @@ $(`<header class="top"><h2>بيانات الطلب</h2></header>${steps(1)}
 <div class="bar">${BB}<button class="cta plain" onclick="confirmOrder()">تأكيد الطلب</button></div>`);
 }else{
 $(`<header class="top"><div class="brand"><img class="logo" src="${LOGO}" alt=""><div><b>${CFG.name}</b></div></div></header>${steps(2)}
-<div class="ok">${I("check_circle")}<h2>تم تجهيز الفاتورة</h2><p>الفاتورة صورة جاهزة، اضغط إرسال وهتلاقيها مرفقة</p></div>
-<div class="box"><img id="invimg" alt="الفاتورة"></div>
-<div class="box"><button class="cta wa" onclick="sendImg('wa')"><span>${I("chat")} إرسال الفاتورة عبر واتساب</span></button><div style="height:10px"></div><button class="cta ms2" onclick="sendImg('ms')"><span>${I("forum")} إرسال الفاتورة عبر ماسنجر</span></button><div style="height:10px"></div><button class="cta plain" onclick="saveImg()"><span>${I("download")} حفظ الصورة</span></button>${pay==="vf"?`<div class="note" style="margin:12px 0 0">${I("info")}<span>بعد الإرسال، ابعت صورة سكرين فودافون كاش في نفس الشات.</span></div>`:""}</div>
+<div class="ok">${I("check_circle")}<h2>تم تجهيز الفاتورة</h2><p>اضغط إرسال وهتتبعت كرسالة مرتبة</p></div>
+<div class="box"><div id="msgprev" style="white-space:pre-wrap;line-height:1.9;font-size:15px"></div></div>
+<div class="box"><div class="note" id="hint" style="margin:0 0 12px">${I("info")}<span>واتساب: بيفتح الشات والرسالة مكتوبة جاهزة، دوس إرسال. ماسنجر: بيفتح الشات والرسالة بتتنسخ، الصقها وابعت.</span></div><button class="cta wa" onclick="sendTxt('wa')"><span>${I("chat")} إرسال الفاتورة عبر واتساب</span></button><div style="height:10px"></div><button class="cta ms2" onclick="sendTxt('ms')"><span>${I("forum")} إرسال الفاتورة عبر ماسنجر</span></button>${pay==="vf"?`<div class="note" style="margin:12px 0 0">${I("info")}<span>بعد الإرسال، ابعت صورة سكرين فودافون كاش في نفس الشات.</span></div>`:""}</div>
 <div class="bar">${BB}<button class="cta plain" onclick="back()">تعديل بيانات الطلب</button></div>`);
-showInv();
+document.getElementById("msgprev").textContent=invText(false);
 }}
 function setPay(p){saveForm();if(p!==pay)shot=null;pay=p;render()}
 function confirmOrder(){saveForm();let bad=false;
 if(!form.name.trim()||!form.addr.trim()||!form.phone.trim()){document.getElementById("e_f").style.display="block";bad=true}
-if(pay==="vf"&&!shot){document.getElementById("e_shot").style.display="block";bad=true}
 if(!bad)go("done")}
-let invBlob=null,invFile=null;
-function wrapT(c,t,w){const out=[];String(t).split("\n").forEach(p=>{let cur="";p.split(/\s+/).forEach(wd=>{const x=cur?cur+" "+wd:wd;if(c.measureText(x).width>w&&cur){out.push(cur);cur=wd}else cur=x});out.push(cur)});return out}
-async function buildInv(){
-try{await document.fonts.load('800 24px Cairo');await document.fonts.load('400 24px Cairo');await document.fonts.load('600 24px Cairo')}catch(e){}
-const W=720,P=36,IW=W-P*2,F='Cairo,Tahoma,sans-serif';
-const cv=document.createElement("canvas"),c=cv.getContext("2d");
-const due=pay==="cash"?sub()+" ج + مصاريف التوصيل":"مصاريف التوصيل فقط";
-const info=[["الاسم",form.name],["العنوان",form.addr],["رقم الموبايل",form.phone],["ملاحظات",form.notes||"—"],["طريقة الدفع",pay==="cash"?"الدفع عند الاستلام":"فودافون كاش (تم رفع السكرين)"]];
-const L=lines();
-let shotImg=null,iw=0,ih=0;
-if(pay==="vf"&&shot){try{shotImg=await new Promise((r,j)=>{const im=new Image();im.onload=()=>r(im);im.onerror=j;im.src=URL.createObjectURL(shot)});iw=IW;ih=Math.round(shotImg.naturalHeight*IW/shotImg.naturalWidth);if(ih>1000){iw=Math.round(iw*1000/ih);ih=1000}}catch(e){shotImg=null}}
-// measure
-c.direction="rtl";c.font='600 26px '+F;
-const infoL=info.map(([k,v])=>wrapT(c,v,IW-250));
-let H=130;
-infoL.forEach(ls=>{H+=Math.max(1,ls.length)*38+22});
-H+=70+L.length*56+20+190+(shotImg?ih+110:0);
-cv.width=W;cv.height=H;
-c.direction="rtl";c.textBaseline="middle";
-c.fillStyle="#fff";c.fillRect(0,0,W,H);
-c.fillStyle="#c8281e";c.fillRect(0,0,W,100);
-c.fillStyle="#fff";c.textAlign="center";c.font='800 38px '+F;c.fillText("🧾 فاتورة طلب - "+CFG.name,W/2,50);
-let y=130;
-info.forEach(([k,v],i)=>{const ls=infoL[i],h=Math.max(1,ls.length)*38+22;
-c.fillStyle=i%2?"#fff":"#faf6f2";c.fillRect(P-10,y-6,IW+20,h);
-c.textAlign="right";c.fillStyle="#80746d";c.font='600 24px '+F;c.fillText(k,W-P,y+19);
-c.fillStyle="#201a17";c.font='600 26px '+F;ls.forEach((t,j)=>c.fillText(t,W-P-230,y+19+j*38));
-y+=h});
-y+=14;c.fillStyle="#c8281e";c.fillRect(P,y,IW,3);y+=28;
-c.textAlign="right";c.fillStyle="#c8281e";c.font='800 30px '+F;c.fillText("الأوردر",W-P,y+10);y+=50;
-L.forEach(l=>{c.fillStyle="#201a17";c.font='600 26px '+F;c.textAlign="right";c.fillText(l.q+" × "+l.n,W-P,y+18);
-c.textAlign="left";c.font='800 26px '+F;c.fillText(l.p*l.q+" ج",P,y+18);
-c.fillStyle="#ece5de";c.fillRect(P,y+46,IW,1.5);y+=56});
-y+=20;
-c.fillStyle="#fbebe9";c.fillRect(P-10,y,IW+20,150);
-const rows=[["إجمالي الأصناف",sub()+" ج"],["التوصيل","بيتدفع للمندوب عند الاستلام"],["المطلوب عند الاستلام",due]];
-rows.forEach(([k,v],i)=>{const yy=y+30+i*44,b=i===2;c.fillStyle=b?"#c8281e":"#201a17";c.font=(b?'800 27px ':'600 24px ')+F;c.textAlign="right";c.fillText(k,W-P,yy);c.textAlign="left";c.fillText(v,P,yy)});
-if(shotImg){y+=150+34;c.fillStyle="#c8281e";c.fillRect(P,y,IW,3);y+=28;c.textAlign="right";c.font='800 30px '+F;c.fillText("سكرين التحويل",W-P,y+10);y+=50;const x0=Math.round((W-iw)/2);c.drawImage(shotImg,x0,y,iw,ih);c.strokeStyle="#ece5de";c.lineWidth=2;c.strokeRect(x0,y,iw,ih)}
-invBlob=await new Promise(r=>cv.toBlob(r,"image/png"));
-try{invFile=new File([invBlob],"invoice.png",{type:"image/png"})}catch(e){invFile=null}
-return URL.createObjectURL(invBlob)}
-async function showInv(){const u=await buildInv();const im=document.getElementById("invimg");if(im)im.src=u}
-function saveImg(){if(!invBlob)return;const a=document.createElement("a");a.href=URL.createObjectURL(invBlob);a.download="invoice-crazy-food.png";document.body.appendChild(a);a.click();a.remove()}
-async function sendImg(app){
-if(!invBlob)await buildInv();
-try{if(invFile&&navigator.canShare&&navigator.canShare({files:[invFile]})){await navigator.share({files:[invFile],title:"فاتورة "+CFG.name});return}}catch(e){if(e&&e.name==="AbortError")return}
-saveImg();
-alert("تم حفظ صورة الفاتورة. هنفتح "+(app==="wa"?"واتساب":"ماسنجر")+"، اضغط على علامة المرفقات وأرفق الصورة.");
-window.open(app==="wa"?"https://wa.me/"+CFG.wa:"https://m.me/"+CFG.ms,"_blank")}
+function invText(b){
+const B=b?"*":"",due=pay==="cash"?sub()+" ج + مصاريف التوصيل":"مصاريف التوصيل فقط",D="━━━━━━━━━━━━";
+const items=lines().map(l=>"• "+l.q+" × "+l.n+" = "+l.p*l.q+" ج").join("\n");
+return "🧾 "+B+"فاتورة طلب جديد - "+CFG.name+B+"\n"+D+"\n👤 "+B+"الاسم:"+B+" "+form.name+"\n📍 "+B+"العنوان:"+B+" "+form.addr+"\n📞 "+B+"الموبايل:"+B+" "+form.phone+"\n📝 "+B+"ملاحظات:"+B+" "+(form.notes||"—")+"\n💳 "+B+"طريقة الدفع:"+B+" "+(pay==="cash"?"الدفع عند الاستلام":"فودافون كاش")+"\n"+D+"\n🍽️ "+B+"الأوردر:"+B+"\n"+items+"\n"+D+"\n💰 "+B+"إجمالي الأصناف:"+B+" "+sub()+" ج\n🛵 "+B+"التوصيل:"+B+" بيتدفع للمندوب عند الاستلام\n✅ "+B+"المطلوب عند الاستلام:"+B+" "+due+(pay==="vf"?"\n📸 سكرين التحويل هيتبعت بعد الرسالة":"")}
+function sendTxt(app){
+const hint=document.getElementById("hint");
+if(app==="wa"){window.open("https://wa.me/"+CFG.wa+"?text="+encodeURIComponent(invText(true)),"_blank");if(hint)hint.innerHTML=I("check_circle")+"<span>الرسالة اتكتبت في شات واتساب، دوس إرسال."+(pay==="vf"?" وبعدها ابعت صورة سكرين التحويل في نفس الشات.":"")+"</span>";return}
+const t=invText(false);
+try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).catch(()=>fbCopy(t));else fbCopy(t)}catch(e){fbCopy(t)}
+if(hint)hint.innerHTML=I("check_circle")+"<span>الفاتورة اتنسخت. الصقها في شات ماسنجر وابعت."+(pay==="vf"?" وبعدها ابعت صورة سكرين التحويل.":"")+"</span>";
+window.open("https://m.me/"+CFG.ms,"_blank")}
+function fbCopy(t){try{const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();document.execCommand("copy");a.remove()}catch(e){}}
 ["gesturestart","gesturechange","gestureend"].forEach(e=>document.addEventListener(e,x=>x.preventDefault()));
 document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
 document.addEventListener("wheel",e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
