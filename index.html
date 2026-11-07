@@ -222,7 +222,7 @@ if(!bad)go("done")}
 function invText(b){
 const B=b?"*":"",due=pay==="cash"?sub()+" ج + مصاريف التوصيل":"مصاريف التوصيل فقط",D="━━━━━━━━━━━━";
 const items=lines().map(l=>"• "+l.q+" × "+l.n+" = "+l.p*l.q+" ج").join("\n");
-return "🧾 "+B+"فاتورة طلب جديد - "+CFG.name+B+"\n"+D+"\n👤 "+B+"الاسم:"+B+" "+form.name+"\n📍 "+B+"العنوان:"+B+" "+form.addr+"\n📞 "+B+"الموبايل:"+B+" "+form.phone+"\n📝 "+B+"ملاحظات:"+B+" "+(form.notes||"—")+"\n💳 "+B+"طريقة الدفع:"+B+" "+(pay==="cash"?"الدفع عند الاستلام":"فودافون كاش")+"\n"+D+"\n🍽️ "+B+"الأوردر:"+B+"\n"+items+"\n"+D+"\n💰 "+B+"إجمالي الأصناف:"+B+" "+sub()+" ج\n🛵 "+B+"التوصيل:"+B+" بيتدفع للمندوب عند الاستلام\n✅ "+B+"المطلوب عند الاستلام:"+B+" "+due+(pay==="vf"?"\n📸 سكرين التحويل هيتبعت بعد الرسالة":"")}
+return "🧾 "+B+"فاتورة طلب جديد - "+CFG.name+B+"\n"+D+"\n👤 "+B+"الاسم:"+B+" "+form.name+"\n📍 "+B+"العنوان:"+B+" "+form.addr+"\n📞 "+B+"الموبايل:"+B+" "+form.phone+"\n📝 "+B+"ملاحظات:"+B+" "+(form.notes||"—")+"\n💳 "+B+"طريقة الدفع:"+B+" "+(pay==="cash"?"الدفع عند الاستلام":"فودافون كاش")+"\n"+D+"\n🍽️ "+B+"الأوردر:"+B+"\n"+items+"\n"+D+"\n💰 "+B+"إجمالي المبلغ:"+B+" "+sub()+" ج\n🛵 "+B+"التوصيل:"+B+" بيتدفع للمندوب عند الاستلام\n✅ "+B+"المطلوب عند الاستلام:"+B+" "+due+(pay==="vf"?"\n📸 سكرين التحويل هيتبعت بعد الرسالة":"")}
 function sendTxt(app){
 const hint=document.getElementById("hint");
 if(app==="wa"){window.open("https://wa.me/"+CFG.wa+"?text="+encodeURIComponent(invText(true)),"_blank");if(hint)hint.innerHTML=I("check_circle")+"<span>الرسالة اتكتبت في شات واتساب، دوس إرسال."+(pay==="vf"?" وبعدها ابعت صورة سكرين التحويل في نفس الشات.":"")+"</span>";return}
